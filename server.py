@@ -1,30 +1,21 @@
-const http = require('http');
-const url = require('url');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const calculatorRouter = require('./routes/calculator');
 
-const server = http.createServer((req, res) => {
-  const queryObject = url.parse(req.url, true).query;
-  const num1 = parseFloat(queryObject.num1);
-  const num2 = parseFloat(queryObject.num2);
-  const operator = queryObject.operator;
+const app = express();
 
-  let result;
+app.use(cors());
+app.use(bodyParser.json());
 
-  switch (operator) {
-    case 'add':
-      result = num1 + num2;
-      break;
-    case 'subtract':
-      result = num1 - num2;
-      break;
-    case 'multiply':
-      result = num1 * num2;
-      break;
-    case 'divide':
-      result = num1 / num2;
-      break;
-    default:
-      result = 'Invalid operator';
-  }
+// Use routes for specific resources, such as the calculator
+app.use('/calculator', calculatorRouter);
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end(`Result: ${result}`);
@@ -35,4 +26,21 @@ const PORT = 3000;
 server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+const express = require('express');
+const router = express.Router();
+
+// Import your calculator logic or functions
+const { calculateResult } = require('../controllers/calculatorController');
+
+router.post('/calculate', (req, res) => {
+  const { input } = req.body;
+
+  // Perform the calculation using the imported logic
+  const result = calculateResult(input);
+
+  // Send the result back to the client
+  res.json({ result });
+});
+
+module.exports = router;
 
